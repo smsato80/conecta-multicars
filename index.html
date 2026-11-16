@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Conecta+ · Multi Cars</title>
+<style>
+  :root{
+    --green-900:#0d4a45; --green-850:#0f524c; --green-800:#125953; --green-700:#177267;
+    --green-600:#1a9687; --green-500:#26ae9f; --green-100:#e7f5f1; --green-050:#f4fbf9;
+    --ink:#152330; --muted:#6f7c86; --line:#e8ecef; --bg:#f6f8f8; --card:#ffffff;
+    --sidebar:#0b3f3b; --sidebar-2:#0f4a45; --sidebar-ink:#eafaf5; --sidebar-muted:#9fd4c8;
+    --acc:#1a9687; --acc-ink:#ffffff; --acc-soft:#dff3ed;
+    --chip1:#dff3ed; --chip2:#eee8fb; --chip3:#fdeeda; --chip4:#e8f0fe;
+    --bar1:#cfeae2; --bar2:#97c8bb; --bar3:#67b59f; --bar4:#2d907b; --bar5:#0d4a45;
+    --shadow:0 20px 50px rgba(15,40,36,.08); --radius:20px; --radius-sm:14px;
+    --brand-panel:linear-gradient(160deg,#0d4a45 0%,#0b3f3b 60%,#093330 100%);
+    --ok:#1a9687; --ok-bg:#dff3ed; --warn:#b97f00; --warn-bg:#fdeeda;
+  }
+  [data-theme="dark"]{
+    --ink:#f4f1e8; --muted:#a39d8f; --line:#26262c; --bg:#0b0b0d; --card:#16161a;
+    --sidebar:#101013; --sidebar-2:#1a1a1f; --sidebar-ink:#f4f1e8; --sidebar-muted:#a39d8f;
+    --acc:#c8aa5a; --acc-ink:#161616; --acc-soft:#26200f;
+    --chip1:#26200f; --chip2:#23232a; --chip3:#26200f; --chip4:#23232a;
+    --bar1:#3d3312; --bar2:#5c4a1a; --bar3:#7d6224; --bar4:#a5853a; --bar5:#c8aa5a;
+    --shadow:0 20px 50px rgba(0,0,0,.45);
+    --brand-panel:linear-gradient(160deg,#17171c 0%,#101013 60%,#0b0b0d 100%);
+    --ok:#c8aa5a; --ok-bg:#26200f; --warn:#c8aa5a; --warn-bg:#26200f;
+    --green-100:#26200f; --green-050:#1a1a1f;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+  button{font-family:inherit;cursor:pointer}
+  input,select{font-family:inherit}
+  svg{display:block}
+
+  /* ---------- LOGIN ---------- */
+  .login-shell{min-height:100vh;display:grid;grid-template-columns:1.05fr 1fr;background:var(--card)}
+  .brand-panel{background:var(--brand-panel);color:#fff;padding:44px 48px;display:flex;flex-direction:column;position:relative;overflow:hidden}
+  [data-theme="dark"] .brand-panel{color:var(--ink)}
+  .brand-logo{display:flex;align-items:center;gap:12px;font-size:26px;font-weight:800;letter-spacing:-.02em}
+  .brand-mark{width:40px;height:40px;border-radius:12px;border:1.5px solid rgba(255,255,255,.45);display:grid;place-items:center;color:#fff}
+  [data-theme="dark"] .brand-mark{border-color:var(--acc);color:var(--acc)}
+  .brand-tag{margin-top:14px;font-size:12px;letter-spacing:.32em;color:var(--sidebar-muted);font-weight:600}
+  [data-theme="dark"] .brand-tag{color:var(--acc)}
+  .brand-head{margin-top:64px;font-size:clamp(38px,4.6vw,58px);line-height:1.04;font-weight:800;letter-spacing:-.03em;max-width:520px}
+  .brand-sub{margin-top:22px;font-size:17px;line-height:1.55;color:#cfe8e2;max-width:440px}
+  [data-theme="dark"] .brand-sub{color:var(--muted)}
+  .brand-orbit{margin-top:auto;padding-top:40px}
+  .brand-foot{margin-top:26px;font-size:13px;color:var(--sidebar-muted)}
+  .login-panel{padding:26px 42px 22px;display:flex;flex-direction:column;background:var(--card)}
+  .login-top{display:flex;justify-content:flex-end;gap:10px;align-items:center}
+  .lang-select{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:10px 12px;font-size:14px}
+  .icon-btn{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);display:grid;place-items:center}
+  .login-form-wrap{flex:1;display:grid;place-items:center;padding:20px 0}
+  .login-card{width:min(100%,430px)}
+  .login-hello{width:46px;height:46px;border-radius:14px;background:var(--acc-soft);display:grid;place-items:center;color:var(--acc);margin-bottom:18px}
+  .login-card h2{font-size:28px;letter-spacing:-.03em;margin:0 0 8px}
+  .login-card p.sub{color:var(--muted);margin:0 0 26px;font-size:15px}
+  .field{margin-bottom:16px}
+  .field label{display:block;font-size:13.5px;font-weight:600;margin-bottom:7px}
+  .field input,.field select{width:100%;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:13px 14px;font-size:15px;outline:none}
+  .field input:focus,.field select:focus{border-color:var(--acc)}
+  .cta{width:100%;border:none;background:var(--acc);color:var(--acc-ink);font-size:16px;font-weight:700;border-radius:14px;padding:15px;margin-top:6px}
+  .error{color:#c0392b;font-size:13.5px;margin-top:10px;min-height:18px}
+  .demo-note{margin-top:22px;border:1px solid var(--line);border-radius:14px;padding:14px 16px;font-size:13.5px;color:var(--muted);line-height:1.5}
+  .demo-note b{color:var(--ink)}
+  .login-footer{display:flex;justify-content:space-between;color:var(--muted);font-size:13px;padding-top:10px;gap:10px;flex-wrap:wrap}
+
+  /* ---------- APP ---------- */
+  .app-shell{display:grid;grid-template-columns:264px minmax(0,1fr);min-height:100vh}
+  .sidebar{background:var(--sidebar);color:var(--sidebar-ink);padding:22px 16px;display:flex;flex-direction:column;gap:6px;position:sticky;top:0;height:100vh;overflow:auto}
+  .side-logo{display:flex;align-items:center;gap:10px;font-size:22px;font-weight:800;letter-spacing:-.02em;padding:2px 8px 16px}
+  .side-logo .brand-mark{width:34px;height:34px;border-radius:10px}
+  [data-theme="dark"] .side-logo .brand-mark{border-color:var(--acc);color:var(--acc)}
+  .company-card{background:var(--sidebar-2);border-radius:16px;padding:13px 14px;display:flex;gap:11px;align-items:center;margin-bottom:16px}
+  .company-ico{width:38px;height:38px;border-radius:11px;background:rgba(255,255,255,.10);display:grid;place-items:center;color:var(--sidebar-ink);flex:none}
+  [data-theme="dark"] .company-ico{color:var(--acc)}
+  .company-card b{font-size:14.5px;display:block;line-height:1.25}
+  .company-card span{font-size:12.5px;color:var(--sidebar-muted)}
+  .nav-sec{font-size:11px;letter-spacing:.26em;color:var(--sidebar-muted);font-weight:700;padding:12px 10px 7px}
+  .nav-item{display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:12px;color:var(--sidebar-ink);font-size:15px;font-weight:550;cursor:pointer;border:none;background:transparent;width:100%;text-align:left}
+  .nav-item:hover{background:var(--sidebar-2)}
+  .nav-item.active{background:var(--acc);color:var(--acc-ink);font-weight:700}
+  .nav-item .dot{margin-left:auto;width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.8}
+  .side-foot{margin-top:auto;padding-top:16px}
+  .side-note{border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:12px 13px;font-size:12.5px;line-height:1.5;color:var(--sidebar-muted)}
+  [data-theme="dark"] .side-note{border-color:var(--line)}
+  .side-user{display:flex;gap:10px;align-items:center;padding:12px 6px 2px}
+  .avatar{width:36px;height:36px;border-radius:50%;background:var(--acc);color:var(--acc-ink);display:grid;place-items:center;font-weight:800;font-size:13px;flex:none}
+  .side-user b{font-size:14px;display:block}
+  .side-user span{font-size:12px;color:var(--sidebar-muted)}
+  .main{display:flex;flex-direction:column;min-width:0}
+  .topbar{display:flex;align-items:center;gap:14px;padding:16px 30px;border-bottom:1px solid var(--line);background:var(--card);position:sticky;top:0;z-index:5;flex-wrap:wrap}
+  .crumb{color:var(--muted);font-size:14.5px}
+  .crumb b{color:var(--ink)}
+  .top-right{margin-left:auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .tz{font-size:13.5px;color:var(--muted);display:flex;align-items:center;gap:7px}
+  .tz i{width:8px;height:8px;border-radius:50%;background:var(--acc);display:block}
+  .content{padding:26px 30px 34px;max-width:1240px;width:100%;margin:0 auto}
+  .banner{background:var(--green-100);border-radius:14px;padding:12px 16px;display:flex;justify-content:space-between;gap:14px;align-items:center;font-size:13.5px;margin-bottom:24px;flex-wrap:wrap}
+  .banner b{letter-spacing:.04em}
+  .pill{background:var(--card);border:1px solid var(--line);color:var(--ink);border-radius:999px;padding:4px 12px;font-size:12.5px;font-weight:700;white-space:nowrap}
+  .page-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-end;margin-bottom:22px;flex-wrap:wrap}
+  .date-kicker{font-size:12.5px;letter-spacing:.24em;color:var(--muted);font-weight:700;margin-bottom:8px}
+  .page-title{font-size:clamp(30px,4vw,44px);letter-spacing:-.03em;margin:0;line-height:1.08}
+  .head-sub{color:var(--muted);margin-top:8px;font-size:15.5px}
+  .btn-primary{background:var(--acc);color:var(--acc-ink);border:none;border-radius:13px;padding:13px 20px;font-size:15px;font-weight:700;white-space:nowrap}
+  .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+  .stat{padding:20px}
+  .stat-top{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:14px;gap:8px}
+  .stat-icon{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;flex:none}
+  .ci1{background:var(--chip1);color:var(--acc)} .ci2{background:var(--chip2);color:var(--acc)}
+  .ci3{background:var(--chip3);color:var(--acc)} .ci4{background:var(--chip4);color:var(--acc)}
+  .stat-value{font-size:40px;font-weight:800;letter-spacing:-.03em;margin:12px 0 10px}
+  .stat-value.small{font-size:30px;padding-top:8px}
+  .stat-foot{display:flex;justify-content:space-between;color:var(--muted);font-size:13.5px;border-top:1px solid var(--line);padding-top:11px}
+  .grid-main{display:grid;grid-template-columns:minmax(0,1.9fr) minmax(0,1fr);gap:16px;margin-bottom:16px}
+  .grid-bottom{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:16px}
+  .panel{padding:22px}
+  .panel h3{margin:0;font-size:20px;letter-spacing:-.02em}
+  .panel h4{margin:0;font-size:17px;letter-spacing:-.01em}
+  .small{color:var(--muted);font-size:13.5px;margin-top:4px}
+  .money{font-size:34px;font-weight:800;letter-spacing:-.02em;margin-top:12px}
+  .chart-row{display:flex;align-items:flex-end;gap:14px;margin-top:20px;flex-wrap:wrap}
+  .convert-box{border:1px solid var(--line);border-radius:14px;padding:12px 14px;text-align:center;min-width:104px}
+  .convert-box strong{font-size:22px;display:block}
+  .chart-col{flex:1;min-width:64px;text-align:center}
+  .chart-col b{font-size:14px}
+  .chart-bar{border-radius:10px 10px 4px 4px;margin:7px auto 8px;width:min(64px,100%)}
+  .chart-col span{font-size:12.5px;color:var(--muted)}
+  .panel-foot{display:flex;justify-content:space-between;border-top:1px solid var(--line);padding-top:13px;margin-top:18px;font-size:13.5px;color:var(--muted);flex-wrap:wrap;gap:8px}
+  .panel-foot a{color:var(--acc);font-weight:700;text-decoration:none}
+  .hub{background:var(--green-050);display:flex;flex-direction:column;gap:12px}
+  .hub-tag{font-size:11.5px;letter-spacing:.24em;color:var(--acc);font-weight:800}
+  .hub h4{font-size:24px;line-height:1.15}
+  .hub p{color:var(--muted);font-size:14.5px;line-height:1.55;margin:0}
+  .outline-btn{border:1.5px solid var(--acc);color:var(--acc);background:transparent;border-radius:12px;padding:11px 16px;font-weight:700;font-size:14px;margin-top:auto}
+  .section-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:10px}
+  .section-head a{color:var(--acc);font-weight:700;font-size:14px;text-decoration:none;white-space:nowrap}
+  .row{display:flex;align-items:center;gap:14px;padding:13px 2px;border-bottom:1px solid var(--line)}
+  .row:last-child{border-bottom:none}
+  .row .time{font-weight:800;font-size:15px}
+  .row .date{color:var(--muted);font-size:12.5px}
+  .circle{width:42px;height:42px;border-radius:50%;background:var(--acc-soft);color:var(--acc);display:grid;place-items:center;font-weight:800;font-size:13.5px;flex:none}
+  .entry-title{font-weight:650;font-size:15px}
+  .entry-sub{color:var(--muted);font-size:13px;margin-top:2px}
+  .badge{border-radius:999px;padding:5px 11px;font-size:12.5px;font-weight:700;white-space:nowrap}
+  .badge.ok{background:var(--ok-bg);color:var(--ok)} .badge.pending{background:var(--warn-bg);color:var(--warn)}
+  .badge.plain{background:var(--green-100);color:var(--ink)}
+  .chev{margin-left:auto;color:var(--muted);font-size:20px}
+  .activity{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
+  .activity:last-of-type{border-bottom:none}
+  .activity-dot{color:var(--acc);padding-top:2px}
+  .activity-title{font-size:14.5px}
+  .activity-time{color:var(--muted);font-size:12.5px;margin-top:2px}
+  .activity-foot{display:flex;justify-content:space-between;border-top:1px solid var(--line);padding-top:13px;margin-top:8px;font-size:14.5px}
+  .footer{display:flex;justify-content:space-between;color:var(--muted);font-size:13px;padding-top:22px;flex-wrap:wrap;gap:8px}
+  .module h2{font-size:28px;letter-spacing:-.02em;margin:0 0 6px}
+  .lead{color:var(--muted);margin:0 0 18px;font-size:15px}
+  .table-wrap{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;min-width:560px}
+  th{ text-align:left;font-size:12.5px;letter-spacing:.06em;color:var(--muted);padding:10px 12px;border-bottom:1px solid var(--line)}
+  td{padding:13px 12px;border-bottom:1px solid var(--line);font-size:14.5px;vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  .cars{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+  .car-card{overflow:hidden}
+  .car-photo{height:118px;display:grid;place-items:center;color:var(--acc);background:var(--green-050);border-bottom:1px solid var(--line)}
+  .car-body{padding:16px 18px 18px}
+  .car-body h4{font-size:17px;margin:0 0 4px}
+  .car-meta{color:var(--muted);font-size:13px;line-height:1.6}
+  .car-price{font-size:21px;font-weight:800;margin-top:10px;letter-spacing:-.01em}
+  .pipe{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;align-items:start}
+  .pipe-col{background:var(--green-050);border:1px solid var(--line);border-radius:16px;padding:13px;min-height:120px}
+  .pipe-col h5{margin:0 0 3px;font-size:13.5px}
+  .pipe-col .pv{color:var(--muted);font-size:12.5px;margin-bottom:10px}
+  .pipe-card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 12px;margin-bottom:9px;font-size:13.5px}
+  .pipe-card b{display:block;font-size:14px}
+  .pipe-card span{color:var(--muted);font-size:12.5px}
+  .task-row{display:flex;gap:12px;align-items:center;padding:14px 2px;border-bottom:1px solid var(--line);font-size:15px}
+  .task-row:last-child{border-bottom:none}
+  .task-check{width:22px;height:22px;border-radius:7px;border:2px solid var(--acc);display:grid;place-items:center;color:var(--acc-ink);flex:none;font-size:13px}
+  .task-check.done{background:var(--acc)}
+  .empty{border:1.5px dashed var(--line);border-radius:16px;padding:26px;color:var(--muted);font-size:14.5px;line-height:1.6}
+  .hidden{display:none!important}
+
+  .row-time{min-width:86px}
+  @media (max-width:1080px){
+    .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .grid-main,.grid-bottom{grid-template-columns:minmax(0,1fr)}
+    .cars{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .pipe{grid-template-columns:repeat(2,minmax(0,1fr))}
+  }
+  @media (max-width:860px){
+    .login-shell{grid-template-columns:1fr}
+    .brand-panel{padding:30px 26px}
+    .brand-head{margin-top:34px}
+    .brand-orbit{display:none}
+    .app-shell{grid-template-columns:1fr}
+    .sidebar{position:static;height:auto}
+    .content{padding:20px 16px 28px}
+    .topbar{padding:14px 16px}
+  }
+  @media (max-width:560px){
+    .row{flex-wrap:wrap}
+    .row-time{min-width:64px}
+    .stats{grid-template-columns:1fr}
+    .cars{grid-template-columns:1fr}
+    .pipe{grid-template-columns:1fr}
+    .login-panel{padding:20px}
+    .login-footer{flex-direction:column;gap:6px}
+  }
+.company-logo{width:38px;height:38px;border-radius:11px;object-fit:cover;flex:none;background:#000}
+</style>
+</head>
+<body>
+
+<!-- ================= LOGIN ================= -->
+<section id="loginView" class="login-shell">
+  <div class="brand-panel">
+    <div>
+      <div class="brand-logo">
+        <span class="brand-mark"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M10 13a4 4 0 0 1 0-6l1.8-1.8a4 4 0 0 1 5.7 5.6l-1 1"/><path d="M14 11a4 4 0 0 1 0 6l-1.8 1.8a4 4 0 0 1-5.7-5.6l1-1"/></svg></span>
+        conecta+
+      </div>
+      <div class="brand-tag">GESTÃO • CLIENTES • AUTOMAÇÃO</div>
+      <div class="brand-head">Seu negócio.<br/>Tudo conectado.</div>
+      <p class="brand-sub">Mais clareza para gerir. Mais tempo para crescer. Todas as conexões do seu negócio, em um só lugar.</p>
+    </div>
+    <div class="brand-orbit">
+      <svg width="230" height="230" viewBox="0 0 230 230" fill="none">
+        <circle cx="115" cy="115" r="98" stroke="currentColor" stroke-opacity=".28" stroke-width="1.5"/>
+        <circle cx="115" cy="17" r="5" fill="currentColor" fill-opacity=".8"/>
+        <circle cx="205" cy="150" r="5" fill="currentColor" fill-opacity=".55"/>
+        <circle cx="30" cy="150" r="5" fill="currentColor" fill-opacity=".55"/>
+        <rect x="82" y="82" width="66" height="66" rx="18" fill="currentColor" fill-opacity=".16"/>
+        <path d="M103 108a8 8 0 0 1 0-12l3.6-3.6a8 8 0 0 1 11.3 11.2l-2 2" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+        <path d="M127 122a8 8 0 0 1 0 12l-3.6 3.6a8 8 0 0 1-11.3-11.2l2-2" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="brand-foot">Conecta+ · Plataforma independente de gestão</div>
+  </div>
+
+  <div class="login-panel">
+    <div class="login-top">
+      <select class="lang-select" aria-label="Idioma"><option>Português (BR)</option><option>日本語</option><option>English</option></select>
+      <button class="icon-btn theme-toggle" aria-label="Alternar tema"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg></button>
+    </div>
+    <div class="login-form-wrap">
+      <div class="login-card">
+        <div class="login-hello"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 3v6h-6"/></svg></div>
+        <h2>Bom ter você por aqui.</h2>
+        <p class="sub">Entre na sua conta para conectar o próximo passo.</p>
+        <div class="field">
+          <label for="company">Empresa</label>
+          <select id="company"><option>Multi Cars · Demonstração</option></select>
+        </div>
+        <div class="field">
+          <label for="email">E-mail</label>
+          <input id="email" type="email" value="gestor@multicars.demo" autocomplete="off" />
+        </div>
+        <div class="field">
+          <label for="password">Senha</label>
+          <input id="password" type="password" value="demo123" />
+        </div>
+        <button id="loginBtn" class="cta">Entrar na plataforma <span>→</span></button>
+        <div id="loginError" class="error"></div>
+        <div class="demo-note"><b>Ambiente de demonstração</b><br/>Empresas e pessoas fictícias. Credenciais no ambiente local, nenhum dado real.</div>
+      </div>
+    </div>
+    <div class="login-footer"><span>Conecta+ © 2026</span><span>Seu negócio. Tudo conectado.</span></div>
+  </div>
+</section>
+
+<!-- ================= APP ================= -->
+<section id="appView" class="app-shell hidden">
+  <aside class="sidebar">
+    <div class="side-logo">
+      <span class="brand-mark"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M10 13a4 4 0 0 1 0-6l1.8-1.8a4 4 0 0 1 5.7 5.6l-1 1"/><path d="M14 11a4 4 0 0 1 0 6l-1.8 1.8a4 4 0 0 1-5.7-5.6l1-1"/></svg></span>
+      conecta+
+    </div>
+    <div class="company-card">
+      <img class="company-logo" src="data:image/jpeg;base64,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" alt="Logo Multi Cars">
+      <div><b>Multi Cars</b><span>Conecta+ Motors</span></div>
+    </div>
+
+    <div class="nav-sec">ESPAÇO DE TRABALHO</div>
+    <button class="nav-item" data-page="overview"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/></svg>Visão geral<span class="dot"></span></button>
+    <button class="nav-item" data-page="clients"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 5.2a3.5 3.5 0 0 1 0 5.9M17.8 14.4a6.5 6.5 0 0 1 3.7 5.6"/></svg>Clientes &amp; leads</button>
+    <button class="nav-item" data-page="pipeline"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 5h18l-7 8v5.5L10 21v-8L3 5z"/></svg>Funil comercial</button>
+    <button class="nav-item" data-page="stock"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h14M6.5 17 8 9.5A2 2 0 0 1 10 8h4a2 2 0 0 1 2 1.5L17.5 17"/><circle cx="7.5" cy="19" r="1.6"/><circle cx="16.5" cy="19" r="1.6"/><path d="M9 19h6"/></svg>Estoque de veículos</button>
+    <button class="nav-item" data-page="quotes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 2.5h9L19 6.5v15H6z"/><path d="M14.5 2.5v4.5H19M9 12h6M9 16h6"/></svg>Orçamentos</button>
+    <button class="nav-item" data-page="tasks"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3.5" y="3.5" width="17" height="17" rx="4"/><path d="m8.5 12.5 2.5 2.5 5-5.5"/></svg>Tarefas</button>
+
+    <div class="nav-sec">GESTÃO</div>
+    <button class="nav-item" data-page="services"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 6.5a4 4 0 0 1 5.6-4L18 6.5l1 1 3.5-2a4 4 0 0 1-5.4 5.3L8 19.9a2 2 0 0 1-2.8 0l-1.4-1.4a2 2 0 0 1 0-2.8l9.1-9.1a4 4 0 0 0 1.6-.1z" transform="scale(.92) translate(1 1)"/></svg>Serviços &amp; equipe</button>
+    <button class="nav-item" data-page="automation"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M13 2 4.5 13.5H11L9.5 22 19 10h-6.5L13 2z"/></svg>Automações</button>
+    <button class="nav-item" data-page="integrations"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 7V3.5M15 7V3.5M7 7h10v4a5 5 0 0 1-10 0V7z"/><path d="M12 16v5.5"/></svg>Integrações</button>
+    <button class="nav-item" data-page="settings"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><path d="M19 12a7 7 0 0 0-.14-1.4l2-1.55-2-3.46-2.36.95a7 7 0 0 0-2.42-1.4L13.7 2.6h-3.4l-.38 2.54a7 7 0 0 0-2.42 1.4l-2.36-.95-2 3.46 2 1.55a7 7 0 0 0 0 2.8l-2 1.55 2 3.46 2.36-.95a7 7 0 0 0 2.42 1.4l.38 2.54h3.4l.38-2.54a7 7 0 0 0 2.42-1.4l2.36.95 2-3.46-2-1.55c.1-.45.14-.92.14-1.4z"/></svg>Configurações</button>
+    <button class="nav-item" data-page="platform"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 2.5 20 5.5v6c0 5-3.4 8.4-8 10-4.6-1.6-8-5-8-10v-6l8-3z"/><path d="m8.8 12 2.2 2.2 4.2-4.7"/></svg>Plataforma</button>
+
+    <div class="side-foot">
+      <div class="side-note"><b>Workspace de demonstração</b><br/>Todos os dados são fictícios.</div>
+      <div class="side-user">
+        <span class="avatar">G</span>
+        <div><b>Gestor</b><span>gestor@multicars.demo</span></div>
+        <button id="logoutBtn" class="icon-btn" style="margin-left:auto;background:transparent;border-color:rgba(255,255,255,.2);color:inherit" aria-label="Sair"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg></button>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="crumb">Workspace <span style="margin:0 6px">/</span> <b id="crumbTitle">Visão geral</b></div>
+      <div class="top-right">
+        <span class="tz"><i></i>Asia/Tokyo</span>
+        <select class="lang-select" aria-label="Idioma"><option>PT-BR</option><option>日本語</option><option>EN</option></select>
+        <button class="icon-btn theme-toggle" aria-label="Alternar tema"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg></button>
+        <span class="avatar">G</span>
+      </div>
+    </div>
+    <div class="content" id="pageRoot"></div>
+  </main>
+</section>
+
+<script>
+(() => {
+  const root = document.documentElement;
+  const savedTheme = (() => { try { return localStorage.getItem('conecta-multicars-theme'); } catch(e){ return null; } })();
+  if (savedTheme === 'dark' || savedTheme === 'light') root.setAttribute('data-theme', savedTheme);
+  document.querySelectorAll('.theme-toggle').forEach(btn => btn.addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('conecta-multicars-theme', next); } catch(e){}
+  }));
+
+  const loginView = document.getElementById('loginView');
+  const appView = document.getElementById('appView');
+  const pageRoot = document.getElementById('pageRoot');
+  const crumbTitle = document.getElementById('crumbTitle');
+  const loginError = document.getElementById('loginError');
+
+  const state = {
+    page: 'overview',
+    stats: { stock: 16, leads: 9, pipeline: '¥ 3.150.000', sales: 4 },
+    funnel: [
+      { label:'Novo lead',     count:4, value:'¥ 3.980.000', h:118 },
+      { label:'Em contato',    count:2, value:'¥ 1.240.000', h:74 },
+      { label:'Proposta',      count:2, value:'¥ 1.910.000', h:66 },
+      { label:'Financiamento', count:1, value:'¥ 860.000',   h:44 },
+      { label:'Conquistado',   count:1, value:'¥ 769.000',   h:52 }
+    ],
+    clients: [
+      { name:'Diego Exemplo',  phone:'+81 90-1200-4100', interest:'Toyota Prius',        source:'Instagram', stage:'Proposta' },
+      { name:'Camila Demo',    phone:'+81 90-3355-8200', interest:'Honda Fit Hybrid',    source:'Indicação', stage:'Em contato' },
+      { name:'Rafael Teste',   phone:'+81 90-9900-1100', interest:'Mitsubishi Delica D:5', source:'Site',    stage:'Financiamento' },
+      { name:'Beatriz Amostra',phone:'+81 90-4411-6600', interest:'Daihatsu Move Canbus', source:'WhatsApp', stage:'Novo lead' },
+      { name:'Lucas Exemplo',  phone:'+81 90-7722-3300', interest:'Nissan Note e-Power', source:'Google',    stage:'Novo lead' },
+      { name:'Tatiane Demo',   phone:'+81 90-6633-9900', interest:'Suzuki Swift',        source:'Instagram', stage:'Conquistado' }
+    ],
+    visits: [
+      { time:'10:00', date:'sábado', initials:'DE', name:'Diego Exemplo',   desc:'Ver o Prius · test-drive', status:'Confirmado' },
+      { time:'11:30', date:'sábado', initials:'CD', name:'Camila Demo',     desc:'Ver o Fit · trazer documentos', status:'Confirmado' },
+      { time:'14:00', date:'sábado', initials:'BA', name:'Beatriz Amostra', desc:'Primeira visita · conhecer a loja', status:'Solicitado' },
+      { time:'15:30', date:'domingo', initials:'RT', name:'Rafael Teste',   desc:'Fechar proposta do Delica', status:'Solicitado' }
+    ],
+    activities: [
+      { title:'<b>Novo lead</b> · Beatriz Amostra, pelo WhatsApp', when:'Hoje · 09:40' },
+      { title:'<b>Orçamento atualizado</b> · Prius, 48 parcelas', when:'Hoje · 08:15' },
+      { title:'<b>Visita confirmada</b> · Diego Exemplo, sábado às 10:00', when:'Ontem · 17:52' },
+      { title:'<b>Estoque atualizado</b> · Note e-Power entrou no pátio', when:'Ontem · 14:20' },
+      { title:'<b>Venda registrada</b> · Swift para Tatiane Demo', when:'Ontem · 11:05' }
+    ],
+    cars: [
+      { model:'Toyota Prius S', meta:'2019 · 58.300 km · Shaken até fev/2027', price:'¥ 1.598.000', tag:'Em negociação', sold:false },
+      { model:'Honda Fit Hybrid', meta:'2020 · 33.100 km · Shaken até mai/2027', price:'¥ 1.298.000', tag:'Disponível', sold:false },
+      { model:'Nissan Note e-Power', meta:'2021 · 25.400 km · Shaken até set/2027', price:'¥ 1.398.000', tag:'Disponível', sold:false },
+      { model:'Daihatsu Move Canbus', meta:'2022 · 12.700 km · Shaken até out/2027', price:'¥ 1.198.000', tag:'Disponível', sold:false },
+      { model:'Mitsubishi Delica D:5', meta:'2018 · 66.200 km · Shaken até abr/2026', price:'¥ 2.498.000', tag:'Em negociação', sold:false },
+      { model:'Suzuki Swift XG', meta:'2019 · 41.900 km · Entregue em 12 de nov.', price:'¥ 769.000', tag:'Vendido', sold:true }
+    ],
+    quotes: [
+      { client:'Diego Exemplo', car:'Toyota Prius S', detail:'48x de ¥ 35.200 · entrada de ¥ 150.000', value:'¥ 1.598.000', status:'Em análise' },
+      { client:'Rafael Teste', car:'Mitsubishi Delica D:5', detail:'72x de ¥ 39.800 · aguardando retorno do banco', value:'¥ 2.498.000', status:'Em análise' },
+      { client:'Tatiane Demo', car:'Suzuki Swift XG', detail:'À vista · venda fechada', value:'¥ 769.000', status:'Aprovado' },
+      { client:'Camila Demo', car:'Honda Fit Hybrid', detail:'Simulação pedida · 60x', value:'¥ 1.298.000', status:'Solicitado' }
+    ],
+    tasks: [
+      { title:'Responder o lead que veio do Instagram', owner:'Gestor', status:'Em andamento', done:false },
+      { title:'Atualizar as fotos do Note no site', owner:'Equipe', status:'Pendente', done:false },
+      { title:'Conferir o shaken do Delica antes da visita', owner:'Gestor', status:'Pendente', done:false },
+      { title:'Enviar a proposta revisada do Prius', owner:'Gestor', status:'Concluída', done:true }
+    ]
+  };
+
+  const ico = {
+    users:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 5.2a3.5 3.5 0 0 1 0 5.9M17.8 14.4a6.5 6.5 0 0 1 3.7 5.6"/></svg>',
+    car:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h14M6.5 17 8 9.5A2 2 0 0 1 10 8h4a2 2 0 0 1 2 1.5L17.5 17"/><circle cx="7.5" cy="19" r="1.6"/><circle cx="16.5" cy="19" r="1.6"/><path d="M9 19h6"/></svg>',
+    yen:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 3.5 12 11l6-7.5M12 11v9.5M8 14.5h8M8 17.5h8"/></svg>',
+    chart:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2" transform="translate(-1 0)"/></svg>',
+    arrow:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M7 17 17 7M8 7h9v9"/></svg>',
+    check:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="m4.5 12.5 5 5 10-11"/></svg>',
+    dot:'<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="5"/></svg>'
+  };
+  const barColors = ['var(--bar1)','var(--bar2)','var(--bar3)','var(--bar4)','var(--bar5)'];
+
+  function banner(){ return `<div class="banner"><div><b>AMBIENTE DE DEMONSTRAÇÃO</b> &nbsp; Empresas, pessoas e operações fictícias. Nenhum envio externo ou cobrança.</div><div class="pill">MVP 0.1</div></div>`; }
+  function foot(){ return `<div class="footer"><span>Conecta+ · Seu negócio. Tudo conectado.</span><span>JPY · Asia/Tokyo · Demonstração</span></div>`; }
+
+  function renderOverview(){
+    return `
+      ${banner()}
+      <div class="page-head">
+        <div>
+          <div class="date-kicker">PAINEL DO DIA</div>
+          <h1 class="page-title">Sua loja, em perspectiva.</h1>
+          <div class="head-sub">Uma visão clara de tudo que conecta o seu dia.</div>
+        </div>
+        <button class="btn-primary">＋ Novo lead</button>
+      </div>
+      <div class="stats">
+        <div class="card stat"><div class="stat-top"><span>Veículos em estoque</span><div class="stat-icon ci1">${ico.car}</div></div><div class="stat-value">${state.stats.stock}</div><div class="stat-foot"><span>Estoque de veículos</span><span>${ico.arrow}</span></div></div>
+        <div class="card stat"><div class="stat-top"><span>Leads ativos</span><div class="stat-icon ci2">${ico.users}</div></div><div class="stat-value">${state.stats.leads}</div><div class="stat-foot"><span>Clientes &amp; leads</span><span>${ico.arrow}</span></div></div>
+        <div class="card stat"><div class="stat-top"><span>Valor em negociação</span><div class="stat-icon ci3">${ico.yen}</div></div><div class="stat-value small">${state.stats.pipeline}</div><div class="stat-foot"><span>No funil comercial</span><span>${ico.arrow}</span></div></div>
+        <div class="card stat"><div class="stat-top"><span>Vendas no mês</span><div class="stat-icon ci4">${ico.chart}</div></div><div class="stat-value">${state.stats.sales}</div><div class="stat-foot"><span>Asia/Tokyo</span><span>${ico.arrow}</span></div></div>
+      </div>
+      <div class="grid-main">
+        <div class="card panel">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap">
+            <div><h3>Oportunidades por etapa</h3><div class="small">Distribuição atual do seu funil comercial</div><div class="money">${state.stats.pipeline}</div></div>
+            <div class="pill">9 leads ativos</div>
+          </div>
+          <div class="chart-row">
+            <div class="convert-box"><strong>11%</strong><div class="small">Conversão do funil</div></div>
+            ${state.funnel.map((f,i) => `<div class="chart-col"><b>${f.count}</b><div class="chart-bar" style="height:${f.h}px;background:${barColors[i]}"></div><span>${f.label}</span></div>`).join('')}
+          </div>
+          <div class="panel-foot"><span>● Dados atuais da sua empresa</span><a href="#" data-goto="pipeline">Funil comercial ↗</a></div>
+        </div>
+        <div class="card panel hub">
+          <div>
+            <div class="hub-tag">CONECTA+ HUB</div>
+            <h4>Tudo no mesmo lugar.</h4>
+            <p>Do primeiro contato à entrega do carro, acompanhe cada conexão.</p>
+          </div>
+          <svg width="150" height="120" viewBox="0 0 150 120" fill="none" style="margin:6px auto">
+            <path d="M75 60 30 25M75 60l45-35M75 60l45 35M75 60l-45 35" stroke="var(--line)" stroke-width="1.6"/>
+            <rect x="52" y="37" width="46" height="46" rx="14" fill="var(--acc)"/>
+            <path d="M68 66a7 7 0 0 1 0-10l3-3a7 7 0 0 1 10 10l-1.7 1.7" stroke="var(--acc-ink)" stroke-width="2.6" stroke-linecap="round"/>
+            <path d="M82 54a7 7 0 0 1 0 10l-3 3a7 7 0 0 1-10-10l1.7-1.7" stroke="var(--acc-ink)" stroke-width="2.6" stroke-linecap="round"/>
+            <circle cx="30" cy="25" r="11" fill="var(--card)" stroke="var(--line)"/><circle cx="120" cy="25" r="11" fill="var(--card)" stroke="var(--line)"/>
+            <circle cx="120" cy="95" r="11" fill="var(--card)" stroke="var(--line)"/><circle cx="30" cy="95" r="11" fill="var(--card)" stroke="var(--line)"/>
+          </svg>
+          <button class="outline-btn">Gerenciar integrações ↗</button>
+        </div>
+      </div>
+      <div class="grid-bottom">
+        <div class="card panel">
+          <div class="section-head"><div><h4>Próximas visitas</h4><small class="small">Asia/Tokyo · visitas e test-drives</small></div><a href="#" data-goto="clients">Ver clientes ↗</a></div>
+          ${state.visits.map(v => `
+            <div class="row">
+              <div class="row-time"><div class="time">${v.time}</div><div class="date">${v.date}</div></div>
+              <div class="circle">${v.initials}</div>
+              <div><div class="entry-title">${v.name}</div><div class="entry-sub">${v.desc}</div></div>
+              <div style="margin-left:auto"><span class="badge ${v.status==='Confirmado'?'ok':'pending'}">${v.status}</span></div>
+            </div>`).join('')}
+        </div>
+        <div class="card panel">
+          <div class="section-head"><div><h4>Atividade recente</h4></div></div>
+          ${state.activities.map(a => `
+            <div class="activity"><div class="activity-dot">${ico.dot}</div><div><div class="activity-title">${a.title}</div><div class="activity-time">${a.when}</div></div></div>`).join('')}
+          <div class="activity-foot"><span>Última venda</span><strong>¥ 769.000</strong></div>
+        </div>
+      </div>
+      ${foot()}`;
+  }
+
+  function renderClients(){
+    return `
+      <div class="module">
+        <div class="page-head" style="margin-bottom:16px">
+          <div><h2 style="font-size:32px;letter-spacing:-.02em;margin:0">Clientes &amp; leads</h2><div class="head-sub">Quem chegou, o que procura e em que etapa está.</div></div>
+          <button class="btn-primary">＋ Novo lead</button>
+        </div>
+        <div class="card panel table-wrap">
+          <table>
+            <thead><tr><th>Nome</th><th>Telefone</th><th>Interesse</th><th>Origem</th><th>Etapa</th></tr></thead>
+            <tbody>
+              ${state.clients.map(c => `<tr><td><b>${c.name}</b></td><td>${c.phone}</td><td>${c.interest}</td><td>${c.source}</td><td><span class="badge ${c.stage==='Conquistado'?'ok':(c.stage==='Proposta'||c.stage==='Financiamento')?'pending':'plain'}">${c.stage}</span></td></tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>${foot()}`;
+  }
+
+  function renderPipeline(){
+    return `
+      <div class="module">
+        <h2>Funil comercial</h2>
+        <p class="lead">Cada lead no seu lugar, do primeiro contato à entrega do carro.</p>
+        <div class="pipe">
+          ${state.funnel.map(f => `
+            <div class="pipe-col">
+              <h5>${f.label}</h5><div class="pv">${f.count} leads · ${f.value}</div>
+              ${state.clients.filter(c => c.stage === f.label).map(c => `<div class="pipe-card"><b>${c.name}</b><span>${c.interest}</span></div>`).join('') || '<div class="small">Sem leads nesta etapa na demonstração.</div>'}
+            </div>`).join('')}
+        </div>
+      </div>${foot()}`;
+  }
+
+  function renderStock(){
+    return `
+      <div class="module">
+        <div class="page-head" style="margin-bottom:16px">
+          <div><h2 style="font-size:32px;letter-spacing:-.02em;margin:0">Estoque de veículos</h2><div class="head-sub">Os carros do pátio, com ano, quilometragem e shaken.</div></div>
+          <button class="btn-primary">＋ Novo veículo</button>
+        </div>
+        <div class="cars">
+          ${state.cars.map(c => `
+            <div class="card car-card">
+              <div class="car-photo">${ico.car.replace('19','34').replace('19','34')}</div>
+              <div class="car-body">
+                <h4>${c.model}</h4>
+                <div class="car-meta">${c.meta}</div>
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+                  <div class="car-price">${c.price}</div>
+                  <span class="badge ${c.sold?'plain':(c.tag==='Em negociação'?'pending':'ok')}">${c.tag}</span>
+                </div>
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>${foot()}`;
+  }
+
+  function renderQuotes(){
+    return `
+      <div class="module">
+        <h2>Orçamentos</h2>
+        <p class="lead">Propostas e simulações de financiamento em andamento.</p>
+        <div class="card panel">
+          ${state.quotes.map(q => `
+            <div class="row">
+              <div class="circle">${q.client.split(' ').map(w=>w[0]).slice(0,2).join('')}</div>
+              <div><div class="entry-title">${q.client} · ${q.car}</div><div class="entry-sub">${q.detail}</div></div>
+              <div style="margin-left:auto;text-align:right"><div class="entry-title">${q.value}</div><span class="badge ${q.status==='Aprovado'?'ok':(q.status==='Em análise'?'pending':'plain')}">${q.status}</span></div>
+            </div>`).join('')}
+        </div>
+      </div>${foot()}`;
+  }
+
+  function renderTasks(){
+    return `
+      <div class="module">
+        <h2>Tarefas</h2>
+        <p class="lead">O que a equipe precisa fazer, sem depender da memória de ninguém.</p>
+        <div class="card panel">
+          ${state.tasks.map(t => `
+            <div class="task-row">
+              <span class="task-check ${t.done?'done':''}">${t.done?ico.check:''}</span>
+              <span style="${t.done?'color:var(--muted);text-decoration:line-through':''}">${t.title}</span>
+              <span style="margin-left:auto"><span class="badge ${t.status==='Concluída'?'ok':(t.status==='Em andamento'?'pending':'plain')}">${t.status}</span></span>
+            </div>`).join('')}
+        </div>
+      </div>${foot()}`;
+  }
+
+  function renderGeneric(title, text){
+    return `<div class="module"><h2>${title}</h2><p class="lead">${text}</p><div class="empty">Módulo demonstrativo. A estrutura está pronta para expansão neste protótipo.</div></div>${foot()}`;
+  }
+
+  const pages = {
+    overview:{ title:'Visão geral', render:renderOverview },
+    clients:{ title:'Clientes & leads', render:renderClients },
+    pipeline:{ title:'Funil comercial', render:renderPipeline },
+    stock:{ title:'Estoque de veículos', render:renderStock },
+    quotes:{ title:'Orçamentos', render:renderQuotes },
+    tasks:{ title:'Tarefas', render:renderTasks },
+    services:{ title:'Serviços & equipe', render:() => renderGeneric('Serviços & equipe','Serviços da loja, equipe de vendas e pós-venda, com responsáveis por cada frente.') },
+    automation:{ title:'Automações', render:() => renderGeneric('Automações','Área para fluxos automáticos, lembretes de visita, confirmações e gatilhos.') },
+    integrations:{ title:'Integrações', render:() => renderGeneric('Integrações','Painel para conectar WhatsApp, site, formulários, pagamentos e APIs.') },
+    settings:{ title:'Configurações', render:() => renderGeneric('Configurações','Preferências do workspace, idioma, permissões e aparência, incluindo os temas claro e escuro.') },
+    platform:{ title:'Plataforma', render:() => renderGeneric('Plataforma','Segurança, empresas, auditoria e estado do ambiente de demonstração.') }
+  };
+
+  function renderPage(){
+    const p = pages[state.page] || pages.overview;
+    crumbTitle.textContent = p.title;
+    pageRoot.innerHTML = p.render();
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.toggle('active', el.dataset.page === state.page));
+    pageRoot.querySelectorAll('[data-goto]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); state.page = a.dataset.goto; renderPage(); window.scrollTo(0,0); }));
+    window.scrollTo(0,0);
+  }
+
+  function goApp(){ loginView.classList.add('hidden'); appView.classList.remove('hidden'); renderPage(); }
+  function goLogin(){ appView.classList.add('hidden'); loginView.classList.remove('hidden'); }
+
+  document.getElementById('loginBtn').addEventListener('click', () => {
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value.trim();
+    if (email === 'gestor@multicars.demo' && password === 'demo123') { loginError.textContent = ''; goApp(); }
+    else { loginError.textContent = 'Use as credenciais da demonstração: gestor@multicars.demo / demo123'; }
+  });
+  document.getElementById('password').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('loginBtn').click(); });
+  document.getElementById('logoutBtn').addEventListener('click', goLogin);
+  document.querySelectorAll('.nav-item').forEach(el => el.addEventListener('click', () => { state.page = el.dataset.page; renderPage(); }));
+
+  if (location.hash === '#app') goApp();
+})();
+</script>
+</body>
+</html>
